@@ -11,7 +11,7 @@ class PropertyFormRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,9 +29,9 @@ class PropertyFormRequest extends FormRequest
             'bedrooms' => ['required', 'integer', 'min:0'],
             'floor' => ['required', 'integer', 'min:0'],
             'price' => ['required', 'integer', 'min:0'],
-            'title' => ['required', 'min:8'],
+            'city' => ['required', 'min:3'],
             'address' => ['required', 'min:8'],
-            'postal_code' => ['required', 'min:8'],
+            'postal_code' => ['required', 'min:3'],
             'sold' => ['required', 'boolean'],
         ];
     }
