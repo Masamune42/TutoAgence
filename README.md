@@ -944,8 +944,38 @@ Création d'une requête
 ```
 php artisan make:request Admin\PropertyFormRequest
 ```
+- On crée le fichier **views/admin/admin.blade.php** pour l'accueil de la page admin
+- On crée le fichier **views/admin/form.blade.php** pour gérer le formulaire d'édition/création d'un bien
+- On crée le fichier **views/shared/input.blade.php** pour générer les inputs de texte
+- On crée le fichier **views/shared/checkbox.blade.php** pour générer les checkbox
 
-Dans **PropertyFormRequest.php**
-```php
+## Gestion des options
+On crée un modèle + une migration pour les options
+```
+php artisan make:model -m Option
+```
+- On crée **OptionFormRequest.php** pour gérer les règles des requêtes
+- On crée **OptionControllerphp** (à partir de PropertyController) pour gérer les routes
+- On crée **views/options/index.blade.php** (à partir de /admin/index.blade.php) pour gérer la page principale
+- On crée **views/options/form.blade.php** (à partir de /admin/form.blade.php) pour gérer le formulaire
 
+On crée une migration pour générer une table de liaison pour la relation manyToMany
+````
+php artisan make:migration CreateOptionPropertyTable
+php artisan migrate
+````
+- On crée le fichier **views/shared/select.blade.php** pour générer les select
+
+## Listing
+On crée un controller
+```
+php artisan make:controller HomeController
+```
+On crée une Request
+```
+php artisan make:request SearchPropertiesRequest
+```
+Installation de la debugbar
+```
+composer require barryvdh/laravel-debugbar --dev
 ```

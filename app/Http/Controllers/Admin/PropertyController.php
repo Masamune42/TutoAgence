@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class PropertyController extends Controller
 {
-    
+
     public function index()
     {
         // On retourne sur la page les biens triés par ordre de création et paginés par 25
@@ -46,9 +46,9 @@ class PropertyController extends Controller
      */
     public function store(PropertyFormRequest $request)
     {
-        $property->options()->sync($request->validated('options'));
         // On crée un bien avec les champs validés
-        Property::create($request->validated());
+        $property = Property::create($request->validated());
+        $property->options()->sync($request->validated('options'));
         return to_route('admin.property.index')->with('success', 'Le bien a été créé');
     }
 
