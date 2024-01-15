@@ -24,6 +24,9 @@ Route::get('/biens/{slug}-{property}', [\App\Http\Controllers\PropertyController
     'property' => $idRegex,
     'slug' => $slugRegex
 ]);
+Route::post('biens/{property}/contact', [\App\Http\Controllers\PropertyController::class, 'contact'])->name('property.contact')->where([
+    'property' => $idRegex
+]);
 
 // Création d'une route /admin
 Route::prefix('admin')->name('admin.')->group(function() {

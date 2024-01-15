@@ -979,3 +979,22 @@ Installation de la debugbar
 ```
 composer require barryvdh/laravel-debugbar --dev
 ```
+
+## Demande de contact
+On crée une requête
+```
+php artisan make:request PropertyContactRequest
+```
+
+On crée un mailable
+```
+php artisan make:mail PropertyContactMail --markdown=emails.property.contact
+```
+
+On utilise [Mailhog](https://github.com/mailhog/MailHog/releases/tag/v1.0.1) pour simuler l'envoi de mails en cofigurant le .env
+```dotenv
+MAIL_MAILER=smtp
+MAIL_HOST=localhost
+MAIL_PORT=1025
+```
+

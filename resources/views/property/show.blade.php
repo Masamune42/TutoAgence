@@ -15,7 +15,10 @@
 
         <div class="mt-4">
             <h4>Intéressé par ce bien ?</h4>
-            <form action="" method="POST" class="vstack gap-3">
+
+            @include('shared.flash')
+
+            <form action="{{ route('property.contact', $property )}}" method="POST" class="vstack gap-3">
                 @csrf
                 <div class="row">
                     @include('shared.input', ['class' => 'col', 'name' => 'firstname','label' => 'Prénom'])
