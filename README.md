@@ -998,3 +998,31 @@ MAIL_HOST=localhost
 MAIL_PORT=1025
 ```
 
+## Authentification
+On crée un controlleur pour l'authentification et une requête
+```dotenv
+php artisan make:controller AuthController
+php artisan make:request LoginRequest
+```
+
+## Images
+On crée un modèle + migration et on migre après avoir configuré
+```
+php artisan make:model -m Picture
+php artisan migrate
+```
+
+On configure l'enregistrement de l'image et fait la liaison pour les images et ajoute le port 8000 dans le .env (en localhost)
+```
+php artisan storage:link
+```
+
+On ajoute [htmx](https://htmx.org) pour supprimer des images et on crée un controller
+```
+php artisan make:controller Admin/PictureController
+```
+
+On installe Glider pour Laravel pour redéfinir la dimension des images à afficher
+```
+composer require league/glide-laravel
+```
