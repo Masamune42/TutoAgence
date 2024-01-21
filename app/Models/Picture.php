@@ -13,10 +13,18 @@ class Picture extends Model
 
     protected $fillable = ['filename'];
 
+    /**
+     * Fonction appelée automatiquement lors de l'initialisation du modèle
+     * Permet de supprimer physiquement les images quand on supprime un élément avec ce modèle
+     *
+     * @return void
+     */
     protected static function booted(): void
     {
+        // On détecte l'évènement de suppression
         static::deleting(function (Picture $picture)
         {
+            // On supprime physiquement l'image
             Storage::disk('public')->delete($picture->filename);
         });
     }
