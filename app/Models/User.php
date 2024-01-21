@@ -45,6 +45,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    // ! A désactiver en cas d'utilisation de faker pour générer les utilisateurs !
     protected function password(): Attribute
     {
         return Attribute::make(

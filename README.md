@@ -1109,3 +1109,39 @@ Lorsque l'on regarde le modèle User on remarque :
 - Un tableau "attributes" : qui contient les informations actuelles
 - Un tableau "original" : qui contient les informations originales avant modification
 Lorsque que l'on fait un save() par la suite Laravel va comparer les 2 tableaux et on récupère dans le tableau "changes" la liste des changements à effectuer qui sera utilisé pour faire un update
+
+## Seed et Factory
+On peut modifier le fichier **database\seeders\DatabaseSeeder.php** pour remplir la base de données
+```php
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
+    {
+        User::factory(10)->create();
+        User::factory()->unverified()->create();
+    }
+}
+```
+On utilise ensuite une commande pour le faire
+```
+php artisan db:seed
+```
+Pour tout effacer
+```
+php artisan migrate:fresh
+``` 
+On crée une nouvelle Factory pour les biens
+```
+php artisan make:factory PropertyFactory
+```
+On change dans **config\app.php** la langue local de faker
+```php
+'faker_locale' => 'fr_FR',
+```
+On crée aussi une factory pour les options
+```
+php artisan make:factory OptionFactory
+```
