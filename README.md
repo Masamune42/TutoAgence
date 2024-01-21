@@ -1026,3 +1026,86 @@ On installe Glider pour Laravel pour redéfinir la dimension des images à affic
 ```
 composer require league/glide-laravel
 ```
+
+## Accesseurs et mutateurs
+### Exemple de local scope
+On crée un scope dans **Property.php** en créant une fonction
+```php
+public function scopeAvailable(Builder $builder): Builder
+{
+    return $builder->where('sold', false);
+}
+```
+On peut ensuite appeler ce scope dans un controller en retirant le mot scope
+```php
+public function index()
+{
+    $properties = Property::with('pictures')->available()->orderBy('created_at','desc')->limit(4)->get();
+    return view('home', ['properties' => $properties]);
+}
+```
+
+### Exemple de global scope
+Il existe un Global Scope qui permet de faire un soft delete qui permet de ne pas supprimer réellement un élément mais d'enregistrer en BDD une date de suppression si on a besoin de revenir dessus
+On crée un scope dans **Property.php** on ajoute
+```php
+use SoftDeletes;
+```
+On doit aussi générer un champ en plus en BDD
+```
+php artisan make:migration AddDeletedAtToProperties
+php artisan migrate
+```
+De cette façon si on supprime un élément, on va retrouver les mêmes informations à l'affichage mais au niveau de la BDD le bien n'a pas été supprimé car au niveau de la requête SQL on a "deleted_at" is null
+```sql
+select count(*) as aggregate from "properties" where "properties"."deleted_at" is null
+```
+Pour afficher des éléments supprimés on peut ajouter la fonction withTrashed()
+```php
+return view('admin.properties.index', [
+    'properties' => Property::orderBy('created_at', 'desc')->withTrashed()->paginate(25)
+]);
+```
+Pour vraiment supprimer un élément on utilisera la fonction forceDelete() à la place de delete() et restore() pour restaurer un élément
+```php
+$property->forceDelete();
+$property->restore();
+```
+
+### Mutateurs et casts
+Pour afficher des champs de la BDD (created_at) si on veut les afficher correctement on doit préciser un cast dans **Property.php**
+```php
+protected $casts = [
+    'created_at' => 'string'
+];
+```
+Sinon on peut cast un champ comme sold
+```php
+protected $casts = [
+    'sold' => 'boolean'
+];
+```
+Pour des cas plus spécifiques
+```php
+$user = User::first();
+// On veut assigner un password à 000 mais il faut qu'il soit encrypter
+$user->password = '0000';
+// A l'affichage de l'attribut password on souhaite afficher '' et si on affiche le user on veut afficher le champ encrypter
+dd($user->password, $user);
+```
+Pour cela on crée une fonction protected dans **Property.php**
+```php
+protected function password(): Attribute
+{
+    return Attribute::make(
+        get: fn (?string $value) => '',
+        set: fn (string $value) => Hash::make($value),
+    );
+}
+```
+
+### Important
+Lorsque l'on regarde le modèle User on remarque :
+- Un tableau "attributes" : qui contient les informations actuelles
+- Un tableau "original" : qui contient les informations originales avant modification
+Lorsque que l'on fait un save() par la suite Laravel va comparer les 2 tableaux et on récupère dans le tableau "changes" la liste des changements à effectuer qui sera utilisé pour faire un update

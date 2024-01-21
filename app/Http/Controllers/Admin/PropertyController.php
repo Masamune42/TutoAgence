@@ -16,7 +16,7 @@ class PropertyController extends Controller
     {
         // On retourne sur la page les biens triés par ordre de création et paginés par 25
         return view('admin.properties.index', [
-            'properties' => Property::orderBy('created_at', 'desc')->paginate(25)
+            'properties' => Property::orderBy('created_at', 'desc')->withTrashed()->paginate(25)
         ]);
     }
 
