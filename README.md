@@ -1,4 +1,14 @@
 # TP Agence Laravel
+## Lancer le projet
+```
+php artisan serve
+```
+En utilisant vite
+```
+npm i
+npm run build
+npm run dev
+```
 
 ## Les bases à connaitre
 
@@ -1144,4 +1154,17 @@ On change dans **config\app.php** la langue local de faker
 On crée aussi une factory pour les options
 ```
 php artisan make:factory OptionFactory
+```
+
+### Vite
+On peut ajouter Vite sur Laravel et utiliser Bootstrap avec :
+```js
+// Dans app.js
+import './bootstrap';
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.css';
+```
+On ajoute ensuite dans **base.blade.php** du code pour remplacer l'import du CSS et JS de Bootstrap :
+```
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 ```
