@@ -1168,3 +1168,29 @@ On ajoute ensuite dans **base.blade.php** du code pour remplacer l'import du CSS
 ```
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 ```
+
+## Laravel Breeze
+C'est un template blade préstylisé avec Tailwind CSS
+```
+composer require laravel/breeze --dev
+php artisan breeze:install blade
+```
+
+On peut modifier les prérequis du mdp dans **\Controllers\Auth\RegisteredUserController.php@store**
+```php
+$request->validate([
+    'name' => ['required', 'string', 'max:255'],
+    'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+    'password' => ['required', 'confirmed', new Rules\Password(4)],
+]);
+```
+
+Si on implements de MustVerifyEmail dans **User.php** on défini que l'utilisateur doit avoir vérifier son adresse mail pour accéder à des pages (ex : dashboard)
+```php
+class User extends Authenticatable implements MustVerifyEmail
+```
+
+Pour limiter les routes dans **web.php** aux user vérifiés on ajoute une règle dans le middleware d'une Route
+```php
+middleware(['auth', 'verified'])
+```
