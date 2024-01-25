@@ -1194,3 +1194,73 @@ Pour limiter les routes dans **web.php** aux user vérifiés on ajoute une règl
 ```php
 middleware(['auth', 'verified'])
 ```
+
+## Les Policy
+On ajoute une colonne pour les rôles
+```
+php artisan make:migration AddRoleToUsers
+php artisan migrate
+```
+On crée une Policy qu'on associe au modèle Property
+```
+php artisan make:policy PropertyPolicy --model=Property
+```
+On définie les règle dans **PropertyPolicy.php**
+```php
+// Tout le monde peut voir tous les biens
+public function viewAny(User $user): bool
+{
+    return true;
+}
+// Seuls les 'admin' peuvent supprimer un bien
+public function restore(User $user, Property $property): bool
+{
+    return $user->role === 'admin';
+}
+```
+On ajoute la Policy dans **app\Providers\AuthServiceProvider.php**
+```php
+protected $policies = [
+    Property::class => PropertyPolicy::class
+];
+```
+On peut vérifier dans un controller si l'utilisateur a le droit
+```php
+// Droit de supprimer un bien
+Auth::user()->can('delete', $property)
+// Droit de voir tous les biens
+Auth::user()->can('viewAny', Property::class)
+// Permet de vérifier le droit + retourner une exception
+$this->authorize('delete', $property)
+```
+On peut utiliser la Policy de façon générale dans **\Admin\PropertyController.php**
+```php
+public function __construct()
+{
+    $this->authorizeResource(Property::class, 'property');
+}
+```
+On peut vérifier les correspondances entre les fonctions de Policy et celles du controller [ici](https://laravel.com/docs/10.x/authorization#authorizing-resource-controllers)
+
+On crée une Policy pour les images
+```
+php artisan make:policy PicturePolicy --model=Picture
+```
+
+On peut utiliser une Policy dans **web.php** via un middleware
+```php
+middleware('can:delete, picture')
+// On peut raccourcir aussi comme ceci
+can('delete', 'picture')
+```
+On peut utiliser une condition sur des droits dans blade
+```php
+// On affiche le bouton si on a le droit delete
+@can("delete", $property)
+    <form action="{{ route('admin.property.destroy', $property) }}" method="POST">
+        @csrf
+        @method("delete")
+        <button class="btn btn-danger">Supprimer</button>
+    </form>
+@endcan
+```

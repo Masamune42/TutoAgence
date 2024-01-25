@@ -8,9 +8,15 @@ use App\Models\Option;
 use App\Models\Picture;
 use App\Models\Property;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PropertyController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->authorizeResource(Property::class, 'property');
+    }
 
     public function index()
     {
@@ -59,6 +65,7 @@ class PropertyController extends Controller
      */
     public function edit(Property $property)
     {
+        // $this->authorize('delete', $property);
         // On récupère le bien via le model binding et on retourne ses infos
         return view('admin.properties.form', [
             'property' => $property,

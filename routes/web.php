@@ -52,7 +52,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(
     Route::resource('option', OptionController::class)->except(['show']);
     Route::delete('picture/{picture}', [PictureController::class, 'destroy'])->name('picture.destroy')->where([
         'picture' => $idRegex,
-    ]);
+    ])
+    ->can('delete', 'picture');
 });
 
 Route::middleware('auth')->group(function () {
