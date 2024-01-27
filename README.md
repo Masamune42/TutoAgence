@@ -1264,3 +1264,68 @@ On peut utiliser une condition sur des droits dans blade
     </form>
 @endcan
 ```
+
+## Service Provider
+Si on crée un fichier avec la classe Weather on va pouvoir l'appeler et utiliser les fonctions grace à l'injection de dépendances mais on sera bloqué si le contructeur doit recevoir un ou plusieurs paramètres. On se sert alors de Service Provider.
+
+Dans **app\Providers\AppServiceProvider.php**
+```php
+public function register(): void
+{
+    $this->app->singleton('weather', fn () => new Weather('demo'));
+}
+// Appelle dans le controller
+app('weather');
+// Autre méthode
+$this->app->singleton(Weather::class, fn () => new Weather('demo'));
+app(Weather::class)
+// Autre méthode
+$this->app->singleton(Weather::class, fn () => new Weather('demo'));
+public function index(Weather $weather)
+{
+    dd($weather);
+}
+// Autre méthode
+public function __construct(private Weather $weather)
+{
+}
+
+public function index()
+{
+    dd($this->weather);
+}
+```
+On peut aussi créer un component **Components\Weather.php** et on modifie **weather.blade.php**
+```
+php artisan make:component Weather
+```
+Des services existent déjà par défaut pour récupérer des informations
+```php
+// Récupère les informations de l'utilisateur authentifié
+public function index(AuthManager $auth)
+$auth->user()
+// Récupère les informations des cookies
+\Illuminate\Cookie\CookieJar
+// On peut aussi appeler le AuthManager
+app('auth');
+app(\Illuminate\Auth\AuthManager::class);
+```
+
+### Pour résumer
+Un service provider est un registre où l'on fait correspondre à une clé un objet particulier et que l'on peut récupérer :
+- en utilisant la fonction app()
+- en utilisant l'injection de dépendance
+On utilise les facades qui sont un raccourci pour aller plus vite pour accéder aux services provider :
+```php
+// Auth retourne la même chose que la 2e ligne
+\Illuminate\Support\Facades\Auth::user();
+app('auth')->user();
+```
+Grace aux facades on peut aussi faire :
+```php
+use Facades\App\Weather;
+public function index()
+{
+    dd(Weather::isSunnyTomorrow());
+}
+```

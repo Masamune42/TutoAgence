@@ -7,6 +7,8 @@ use App\Http\Requests\Admin\PropertyFormRequest;
 use App\Models\Option;
 use App\Models\Picture;
 use App\Models\Property;
+use Facades\App\Weather;
+use Illuminate\Auth\AuthManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,6 +22,7 @@ class PropertyController extends Controller
 
     public function index()
     {
+        dd(Weather::isSunnyTomorrow());
         // On retourne sur la page les biens triés par ordre de création et paginés par 25
         return view('admin.properties.index', [
             'properties' => Property::orderBy('created_at', 'desc')->withTrashed()->paginate(25)
