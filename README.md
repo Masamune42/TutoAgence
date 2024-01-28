@@ -1329,3 +1329,20 @@ public function index()
     dd(Weather::isSunnyTomorrow());
 }
 ```
+
+## Les évènements
+On ajoute un évènement et un listener lié
+```
+php artisan make:event ContactRequestEvent
+php artisan make:listener ContactListener --event=ContactRequestEvent
+```
+On peut implémenter ShouldQueue si on veut rendre le listener asynchrone et effectuer l'action en tâche de fond si elle prend du temps
+```php
+class ContactListener implements ShouldQueue
+```
+
+On peut utiliser des suscriber pour s'abonner à plusieurs events en créant :
+[ContactEventSuscriber.php](app%2FListeners%2FContactEventSuscriber.php)
+
+### Résumé
+Lorsqu'il se passe des choses spécifiques dans l'application il est conseillé de créer des évènements.
