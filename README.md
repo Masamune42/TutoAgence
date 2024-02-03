@@ -1346,3 +1346,27 @@ On peut utiliser des suscriber pour s'abonner à plusieurs events en créant :
 
 ### Résumé
 Lorsqu'il se passe des choses spécifiques dans l'application il est conseillé de créer des évènements.
+
+## Notifications
+Si on veut envoyer des notifications sur plusieurs canaux on utiliser les notifications de Laravel. Si on n'utilise que les mails, on n'utilisera de préférence Mailable uniquement.
+```
+php artisan make:notification ContactRequestNotification
+```
+On crée une table qui va stocker toutes les notifications
+```
+php artisan notifications:table
+php artisan migrate
+```
+On peut récupérer toutes les notifications d'un utilisateur par la suite
+```php
+$user = User::first();
+dd($user->notifications);
+// Notifications non lues par l'utilisateur
+dd($user->unreadNotifications);
+// Passer une notification à "lue"
+dd($user->unreadNotifications[0]->markAsRead());
+// Passer toutes les notifications à "lue"
+$user->unreadNotifications->markAsRead()
+// Suppression des notifications
+$user->unreadNotifications()->delete()
+```
