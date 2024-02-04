@@ -36,7 +36,8 @@
                     <hr>
 
                     <div class="mt-4">
-                        <h4>Intéressé par ce bien ?</h4>
+                        <h4>{{ __('Interested in this property :title ?', ['title' => $property->title]) }}</h4>
+{{--                        <h4>Intéressé par ce bien ?</h4>--}}
 
                         @include('shared.flash')
 

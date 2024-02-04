@@ -1370,3 +1370,39 @@ $user->unreadNotifications->markAsRead()
 // Suppression des notifications
 $user->unreadNotifications()->delete()
 ```
+
+## Internionalisation
+Pour gérer la traduction des textes on crée un fichier **lang/fr/property.php** pour le français et on ajoute les références
+```php
+<h4>{{ __('property.contact_title') }}</h4>
+```
+```php
+return [
+    'contact_title' => 'Inéressé par ce bien ?'
+];
+```
+On peut aussi publier les fichiers de traductions afin de gérer les messages d'erreurs dans **lang/en**
+```
+php artisan lang:publish
+```
+On se rend par la suite sur [https://laravel-lang.com/installation.html](https://laravel-lang.com/installation.html) et on ajoute la langue française
+```
+composer require --dev laravel-lang/common
+php artisan lang:add fr
+```
+On ajouter des traductions à la volet
+```php
+'attributes'           => [
+    'firstname'                => 'Prénom',
+]
+```
+On peut aussi gérer les traduction de phrase complète à partir de l'anglais au lieu d'une clé
+```json
+{
+    "Interested in this property :title ?": "Inéressé par ce bien :title ?"
+}
+```
+```php
+<h4>{{ __('Interested in this property :title ?', ['title' => $property->title]) }}</h4>
+```
+On peut utiliser les 2 méthodes en parrallèle 
