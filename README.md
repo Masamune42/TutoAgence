@@ -1458,3 +1458,121 @@ DemoJob::dispatch($property);
 // On peut ajouter un délai
 DemoJob::dispatch($property)->delay(now()->addSeconds(10));
 ```
+
+## Api Resource
+Lorsque l'on envoie un objet sur Laravel il est converti automatiquement en json, mais cela peut exposer la plupart des champs. Pour celà on peut créer une ressource API
+```
+php artisan make:resource PropertyResource
+php artisan make:controller Api/PropertyController
+```
+On peut ainsi configurer les liens dans **api.php** et configurer l'envoi des données
+```php
+// api.php
+Route::get('/biens', [\App\Http\Controllers\Api\PropertyController::class, 'index']);
+
+
+// PropertyController
+class PropertyController extends Controller
+{
+    public function index()
+    {
+        return PropertyResource::collection(Property::limit(5)->get());
+    }
+}
+
+// PropertyResource
+// Si on utilise les fonctions magiques
+public function toArray(Request $request): array
+{
+    return [
+        'id' => $this->id,
+        'title' => $this->title,
+    ];
+}
+// Sinon
+/**
+ * @property Property $resource
+ */
+class PropertyResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->resource->id,
+            'title' => $this->resource->title,
+            'options' => $this->resource->options,
+        ];
+    }
+}
+```
+Si on veut limiter les informations envoyées par un élément en relation, on crée une nouvelle ressource
+```
+php artisan make:resource OptionResource
+```
+On peut ainsi tout configurer
+```php
+// OptionResource
+public function toArray(Request $request): array
+{
+    return [
+        'id' => $this->resource->id,
+        'name' => $this->resource->name,
+    ];
+}
+
+// PropertyResource
+public function toArray(Request $request): array
+{
+    return [
+        'id' => $this->resource->id,
+        'title' => $this->resource->title,
+        'options' => OptionResource::collection($this->resource->options),
+    ];
+}
+// On peut conditionner l'affichage d'éléments envoyés
+public function toArray(Request $request): array
+{
+    return [
+        'id' => $this->resource->id,
+        'title' => $this->resource->title,
+        'price' => $this->when(false, $this->resource->price),
+        'options' => OptionResource::collection($this->resource->options),
+    ];
+}
+// Utilisation de l'eagerloading
+// Api/PropertyController
+// On précharge les options dans la requête
+return PropertyResource::collection(Property::limit(5)->with('options')->get());
+
+// PropertyResource
+public function toArray(Request $request): array
+{
+    return [
+        'id' => $this->resource->id,
+        'title' => $this->resource->title,
+        'price' => $this->when(false, $this->resource->price),
+        'options' => OptionResource::collection($this->whenLoaded('options')),
+    ];
+}
+```
+On peut aussi faire la PropertyResource sur une entrée en particulier
+```php
+// Api/PropertyController
+return new PropertyResource(Property::find(1));
+```
+On peut utiliser le nom que l'on veut pour préfixer les données envoyées à la place de "data" en ajoutant une propriété. Ne marche pas pour le renvoie de collection.
+
+```php
+public static $wrap = "property";
+```
+On peut utiliser la pagination dans la ressource pour aussi récupérer les metadonnées
+```php
+// Api/PropertyController
+return PropertyResource::collection(Property::paginate(5));
+```
+On peut aussi utiliser des ressources de type Collection (voir vidéo sur API Resource à partir de 12:00)...
