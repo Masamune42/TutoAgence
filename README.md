@@ -1406,3 +1406,55 @@ On peut aussi gérer les traduction de phrase complète à partir de l'anglais a
 <h4>{{ __('Interested in this property :title ?', ['title' => $property->title]) }}</h4>
 ```
 On peut utiliser les 2 méthodes en parrallèle 
+
+## Les filtes d'attente
+Permet de faire la partie de traitement lourd qui peut prendre du temps en tâche de fond sans faire attendre le rechargement d'une page.
+```dotenv
+# On change QUEUE_CONNECTION pour utiliser la base de données pour les files d'attente dans **.env*
+QUEUE_CONNECTION=database
+```
+On crée la table qui correspond
+```
+php artisan queue:table
+php artisan migrate
+```
+On ajoute implements ShouldQueue dans **ContactRequestNotification**
+```php
+class ContactRequestNotification extends Notification implements ShouldQueue
+```
+On peut visualiser les informations sur les files qu'on peut laisser ouvert. Quand on utilise une file d'attente, on stockera une ligne dans la table **jobs**
+```
+php artisan queue:work -v
+```
+Pour debuger c'est mieux d'utiliser
+```
+php artisan queue:listen
+```
+Cela permet d'actualiser quand on change le code
+
+Si la touche échoue, l'utilisateur ne le verra pas mais on le verra dans la console avec "FAIL" et on ajoutera une ligne dans la table **failed_jobs** en capturant l'exception. Pour afficher la liste des jobs en erreur :
+```
+php artisan queue:failed
+```
+On peut relancer l'exécution :
+```
+php artisan queue:retry [id]
+php artisan queue:retry all
+```
+On peut oublier une tache échouée
+```
+php artisan queue:forget [id]
+php artisan queue:flush
+```
+Si on utilise Redis (non fait dans le tuto) on peut gérer les tâches avec [Laravel Horizon](https://laravel.com/docs/10.x/horizon)
+
+On peut sinon créer un Job pour gérer les tâches asyncrhones
+```
+php artisan make:job DemoJob
+```
+Une fois **DemoJob** configuré, on peut l'utiliser dans le controller
+```php
+DemoJob::dispatch($property);
+// On peut ajouter un délai
+DemoJob::dispatch($property)->delay(now()->addSeconds(10));
+```
