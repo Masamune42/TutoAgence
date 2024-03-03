@@ -1001,7 +1001,7 @@ On crée un mailable
 php artisan make:mail PropertyContactMail --markdown=emails.property.contact
 ```
 
-On utilise [Mailhog](https://github.com/mailhog/MailHog/releases/tag/v1.0.1) pour simuler l'envoi de mails en cofigurant le .env
+On utilise [Mailhog](https://github.com/mailhog/MailHog/releases/tag/v1.0.1) pour simuler l'envoi de mails en configurant le .env
 ```dotenv
 MAIL_MAILER=smtp
 MAIL_HOST=localhost
@@ -1009,7 +1009,7 @@ MAIL_PORT=1025
 ```
 
 ## Authentification
-On crée un controlleur pour l'authentification et une requête
+On crée un controller pour l'authentification et une requête
 ```dotenv
 php artisan make:controller AuthController
 php artisan make:request LoginRequest
@@ -1544,7 +1544,7 @@ public function toArray(Request $request): array
         'options' => OptionResource::collection($this->resource->options),
     ];
 }
-// Utilisation de l'eagerloading
+// Utilisation de l'eager loading
 // Api/PropertyController
 // On précharge les options dans la requête
 return PropertyResource::collection(Property::limit(5)->with('options')->get());
@@ -1565,14 +1565,61 @@ On peut aussi faire la PropertyResource sur une entrée en particulier
 // Api/PropertyController
 return new PropertyResource(Property::find(1));
 ```
-On peut utiliser le nom que l'on veut pour préfixer les données envoyées à la place de "data" en ajoutant une propriété. Ne marche pas pour le renvoie de collection.
+On peut utiliser le nom que l'on veut pour préfixer les données envoyées à la place de "data" en ajoutant une propriété. Ne marche pas pour le renvoi de collection.
 
 ```php
 public static $wrap = "property";
 ```
-On peut utiliser la pagination dans la ressource pour aussi récupérer les metadonnées
+On peut utiliser la pagination dans la ressource pour aussi récupérer les métadonnées
 ```php
 // Api/PropertyController
 return PropertyResource::collection(Property::paginate(5));
 ```
 On peut aussi utiliser des ressources de type Collection (voir vidéo sur API Resource à partir de 12:00)...
+
+
+## Tester avec Laravel
+On peut lancer un test avec la commande
+```
+php artisan test
+```
+
+On va retrouver dans le dossier tests 2 sous-dossiers :
+- Feature : va contenir des tests fonctionnels où l'application va avoir été démarré, donc à tester dans l'application. Tests un peu plus larges.
+- Unit : contient les tests unitaires. On va tester des unités de code.
+
+Pour créer nos propres tests :
+1. On va modifier le fichier [phpunit.xml](phpunit.xml).
+On décommente les 2 lignes pour ne pas vider la BDD en lançant les tests
+```xml
+ <env name="DB_CONNECTION" value="sqlite"/> 
+ <env name="DB_DATABASE" value=":memory:"/> 
+```
+2. On ajoute une ligne dans [ExampleTest.php](tests%2FFeature%2FExampleTest.php)
+```php
+use RefreshDatabase;
+```
+
+3. On peut effectuer des tests :
+```php
+public function test_the_application_returns_a_successful_response(): void
+{
+    $response = $this->get('/');
+
+    $response->assertStatus(200);
+//    On vérifie qu'on a bien le texte suivant dans la page
+    $response->assertSee('Agence lorem ipsum');
+} 
+```
+
+4. On peut créer des tests pour créer [PropertyTest.php](tests%2FFeature%2FPropertyTest.php) :
+```
+php artisan make:test PropertyTest
+```
+
+5. On peut aussi créer des tests pour tester des API [WeatherTest.php](tests%2FFeature%2FWeatherTest.php)
+
+6. Création d'un test unitaire [WeatherTest.php](tests%2FUnit%2FWeatherTest.php)
+```
+php artisan make:test WeatherTest --unit
+```
