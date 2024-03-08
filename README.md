@@ -1,5 +1,26 @@
 # TP Agence Laravel
 ## Lancer le projet
+Installation
+```
+composer install
+```
+Copier le fichier [.env.example](.env.example) en .env et changer les constantes
+```dotenv
+APP_URL=http://localhost:8000
+DB_CONNECTION=sqlite
+# Supprimer les lignes suivantes pour une connexion sqlite
+```
+
+Création de la BDD + migrations
+```
+php artisan migrate
+```
+
+Création du raccourci pour le stockage des images
+```
+php artisan storage:link
+```
+
 ```
 php artisan serve
 ```
@@ -896,7 +917,7 @@ On modifie le .env pour qu'il corresponde à l'URL du site
 APP_URL=http://localhost:8000
 ```
 
-On crée un lien vers le dossir de storage qui n'est pas accessible normalement
+On crée un lien vers le dossier de storage qui n'est pas accessible normalement
 ```
 php artisan storage:link
 ```
