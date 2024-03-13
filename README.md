@@ -1297,23 +1297,29 @@ public function register(): void
 }
 // Appelle dans le controller
 app('weather');
+
 // Autre méthode
 $this->app->singleton(Weather::class, fn () => new Weather('demo'));
 app(Weather::class)
+
 // Autre méthode
 $this->app->singleton(Weather::class, fn () => new Weather('demo'));
 public function index(Weather $weather)
 {
     dd($weather);
 }
+
 // Autre méthode
-public function __construct(private Weather $weather)
+// Components\Weather.php
+public function __construct(private \App\Weather $weather)
 {
 }
 
-public function index()
+public function render(): View|Closure|string
 {
-    dd($this->weather);
+    return view('components.weather', [
+        'sunny' => $this->weather->isSunnyTomorrow()
+    ]);
 }
 ```
 On peut aussi créer un component **Components\Weather.php** et on modifie **weather.blade.php**
@@ -1428,7 +1434,7 @@ On peut aussi gérer les traduction de phrase complète à partir de l'anglais a
 ```
 On peut utiliser les 2 méthodes en parrallèle 
 
-## Les filtes d'attente
+## Les files d'attente
 Permet de faire la partie de traitement lourd qui peut prendre du temps en tâche de fond sans faire attendre le rechargement d'une page.
 ```dotenv
 # On change QUEUE_CONNECTION pour utiliser la base de données pour les files d'attente dans **.env*
